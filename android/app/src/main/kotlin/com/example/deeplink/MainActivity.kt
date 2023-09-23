@@ -29,6 +29,26 @@ class MainActivity: FlutterActivity() {
             }
         }
 
+
+//        // Get FCM token
+//        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+//            if (!task.isSuccessful) {
+//                println("Fetching FCM registration token failed")
+//                return@addOnCompleteListener
+//            }
+//
+//            // Get new FCM registration token
+//            val token = task.result
+//
+//            // Print the token
+//            println("FCM Token: $token")
+//
+//            // Display a toast message with the token
+//            Toast.makeText(this, "FCM Token: $token", Toast.LENGTH_LONG).show()
+//            // Send the token to Flutter
+////            methodChannel.invokeMethod("onToken", token)
+//        }
+
         EventChannel(flutterEngine.dartExecutor, EVENTS).setStreamHandler(
             object : EventChannel.StreamHandler {
                 override fun onListen(args: Any?, events: EventSink) {
