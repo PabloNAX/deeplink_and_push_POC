@@ -11,6 +11,8 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.EventChannel.EventSink
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
+import com.google.firebase.messaging.FirebaseMessaging
+import android.widget.Toast
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "poc.com.example.deeplink/channel"
@@ -30,24 +32,24 @@ class MainActivity: FlutterActivity() {
         }
 
 
-//        // Get FCM token
-//        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-//            if (!task.isSuccessful) {
-//                println("Fetching FCM registration token failed")
-//                return@addOnCompleteListener
-//            }
-//
-//            // Get new FCM registration token
-//            val token = task.result
-//
-//            // Print the token
-//            println("FCM Token: $token")
-//
-//            // Display a toast message with the token
-//            Toast.makeText(this, "FCM Token: $token", Toast.LENGTH_LONG).show()
-//            // Send the token to Flutter
-////            methodChannel.invokeMethod("onToken", token)
-//        }
+        // Get FCM token
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                println("Fetching FCM registration token failed")
+                return@addOnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            // Print the token
+            println("FCM Token: $token")
+
+            // Display a toast message with the token
+            Toast.makeText(this, "FCM Token: $token", Toast.LENGTH_LONG).show()
+            // Send the token to Flutter
+//            methodChannel.invokeMethod("onToken", token)
+        }
 
         EventChannel(flutterEngine.dartExecutor, EVENTS).setStreamHandler(
             object : EventChannel.StreamHandler {
