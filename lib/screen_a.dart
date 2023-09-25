@@ -7,10 +7,23 @@ class ScreenA extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Container(
-          width: 200,
-          height: 400,
-          color: Colors.amber,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Screen A',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            SizedBox(
+              height: 24,
+            ),
+            Container(
+              width: 200,
+              height: 400,
+              color: Colors.amber,
+            ),
+          ],
         ),
       ),
     );
