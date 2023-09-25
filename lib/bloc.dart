@@ -31,6 +31,15 @@ class DeepLinkBloc extends Bloc {
       print('Received link: $uri');
       _onRedirected(uri);
     });
+
+    // Adding listener for incoming messages
+    platform.setMethodCallHandler((call) {
+      if (call.method == "onMessage") {
+        print("flutter Received message: ${call.arguments}");
+        _onRedirected(call.arguments);
+      }
+      return Future.value(null);
+    });
   }
 
   void _onRedirected(String? uri) {

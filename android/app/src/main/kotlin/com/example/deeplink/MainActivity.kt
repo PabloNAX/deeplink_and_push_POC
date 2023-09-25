@@ -3,8 +3,10 @@ package com.example.deeplink
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import androidx.annotation.NonNull
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
@@ -19,6 +21,13 @@ class MainActivity: FlutterActivity() {
     private var startString: String? = null
     private val EVENTS = "poc.com.example.deeplink/events"
     private var linksReceiver: BroadcastReceiver? = null
+    private val messageReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val url = intent.getStringExtra("url")
+            // Send the URL to Flutter
+            flutterEngine?.dartExecutor?.let { MethodChannel(it.binaryMessenger, CHANNEL).invokeMethod("onMessage", url) }
+        }
+    }
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine)
@@ -31,6 +40,8 @@ class MainActivity: FlutterActivity() {
             }
         }
 
+        // Register the local broadcast receiver
+        LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, IntentFilter("com.example.deeplink.ON_MESSAGE"))
 
         // Get FCM token
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
@@ -47,8 +58,6 @@ class MainActivity: FlutterActivity() {
 
             // Display a toast message with the token
             Toast.makeText(this, "FCM Token: $token", Toast.LENGTH_LONG).show()
-            // Send the token to Flutter
-//            methodChannel.invokeMethod("onToken", token)
         }
 
         EventChannel(flutterEngine.dartExecutor, EVENTS).setStreamHandler(
@@ -63,12 +72,15 @@ class MainActivity: FlutterActivity() {
             }
         )
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val intent = getIntent()
         startString = intent.data?.toString()
     }
+
+
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
@@ -85,5 +97,12 @@ class MainActivity: FlutterActivity() {
                 events.success(dataString)
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Unregister the local broadcast receivers
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(messageReceiver)
+        linksReceiver?.let { LocalBroadcastManager.getInstance(this).unregisterReceiver(it) }
     }
 }
